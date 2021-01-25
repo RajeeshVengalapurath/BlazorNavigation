@@ -1,7 +1,33 @@
 ﻿@page "/"
+@using Microsoft.Extensions.Logging
+@implements IDisposable
+@inject NavigationManager NavigationManager
+@inject ILogger<Index> Logger
 
-<h1>Hello, world!</h1>
+<h1>Navigate in component code example</h1>
 
-Welcome to your new app.
+<button class="btn btn-primary" @onclick="NavigateToCounterComponent">
+    Navigate to the Counter component
+</button>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@code {
+    private void NavigateToCounterComponent()
+    {
+        NavigationManager.NavigateTo("counter");
+    }
+
+    protected override void OnInitialized()
+    {
+        NavigationManager.LocationChanged += HandleLocationChanged;
+    }
+
+    private void HandleLocationChanged(object sender, LocationChangedEventArgs e)
+    {
+        Logger.LogInformation("URL of new location: {Location}", e.Location);
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= HandleLocationChanged;
+    }
+}
